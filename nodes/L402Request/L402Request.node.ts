@@ -640,7 +640,7 @@ export class L402Request implements INodeType {
 
 		const fullResponseProperties = ['body', 'headers', 'statusCode', 'statusMessage'];
 
-    const credentials = (await this.getCredentials('l402Request')) as IDataObject;
+    const credentials = (await this.getCredentials('l402Api')) as IDataObject;
     const nwc = new webln.NostrWebLNProvider({ nostrWalletConnectUrl: credentials.nwcURL as string });
 		let authentication;
 
