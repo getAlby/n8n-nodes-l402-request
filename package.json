@@ -1,6 +1,6 @@
 {
   "name": "@getalby/n8n-nodes-l402-request",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "",
   "keywords": [
     "n8n-community-node-package"
@@ -45,8 +45,8 @@
     "@typescript-eslint/parser": "~5.45",
     "eslint-plugin-n8n-nodes-base": "^1.11.0",
     "gulp": "^4.0.2",
-    "n8n-core": "*",
-    "n8n-workflow": "*",
+    "n8n-core": "^0.161.0",
+    "n8n-workflow": "^0.143.0",
     "prettier": "^2.7.1",
     "typescript": "~4.8.4"
   }

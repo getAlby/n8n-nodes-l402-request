@@ -14,7 +14,6 @@ import type {
 } from 'n8n-workflow';
 
 import {
-	BINARY_ENCODING,
 	jsonParse,
 	NodeApiError,
 	NodeOperationError,
@@ -65,7 +64,7 @@ export class L402Request implements INodeType {
     outputs: ['main'],
     credentials: [
       {
-        name: 'l402Request',
+        name: 'l402Api',
         required: true,
         //testedBy: 'testNWC',
       },
@@ -804,7 +803,7 @@ export class L402Request implements INodeType {
 					if (itemBinaryData.id) {
 						uploadData = this.helpers.getBinaryStream(itemBinaryData.id);
 					} else {
-						uploadData = Buffer.from(itemBinaryData.data, BINARY_ENCODING);
+						uploadData = Buffer.from(itemBinaryData.data, 'base64');
 					}
 
 					accumulator[cur.name] = {
@@ -878,7 +877,7 @@ export class L402Request implements INodeType {
 						const metadata = await this.helpers.getBinaryMetadata(itemBinaryData.id);
 						contentLength = metadata.fileSize;
 					} else {
-						uploadData = Buffer.from(itemBinaryData.data, BINARY_ENCODING);
+						uploadData = Buffer.from(itemBinaryData.data, 'base64');
 						contentLength = uploadData.length;
 					}
 					requestOptions.body = uploadData;
