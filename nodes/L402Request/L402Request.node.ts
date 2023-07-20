@@ -1,6 +1,11 @@
 import type { Readable } from 'stream';
 import { fetchWithL402 } from 'alby-tools';
 import { webln } from 'alby-js-sdk';
+import 'websocket-polyfill';
+
+import * as crypto from 'crypto';
+ // @ts-ignore
+global.crypto = crypto as any;
 
 import type {
 	IBinaryKeyData,
@@ -9,8 +14,7 @@ import type {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
-	JsonObject,
-  NodePropertyTypes,
+	JsonObject
 } from 'n8n-workflow';
 
 import {
@@ -21,7 +25,7 @@ import {
 	//removeCircularRefs,
 } from 'n8n-workflow';
 
-import type { OptionsWithUri } from 'request-promise-native';
+import type { RequestPromiseOptions } from 'request-promise-native';
 
 import type { BodyParameter, IAuthDataSanitizeKeys } from './GenericFunctions';
 
@@ -70,12 +74,6 @@ export class L402Request implements INodeType {
       },
     ],
     properties: [
-      {
-        displayName: '',
-        name: 'curlImport',
-        type: 'curlImport' as NodePropertyTypes,
-        default: '',
-      },
       {
         displayName: 'Method',
         name: 'method',
@@ -636,25 +634,16 @@ export class L402Request implements INodeType {
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
+    console.log(items)
 		const nodeVersion = this.getNode().typeVersion;
 
 		const fullResponseProperties = ['body', 'headers', 'statusCode', 'statusMessage'];
 
     const credentials = (await this.getCredentials('l402Api')) as IDataObject;
     const nwc = new webln.NostrWebLNProvider({ nostrWalletConnectUrl: credentials.nwcURL as string });
-		let authentication;
 
-		try {
-			authentication = this.getNodeParameter('authentication', 0) as
-				| 'predefinedCredentialType'
-				| 'genericCredentialType'
-				| 'none';
-		} catch {}
-
-		type RequestOptions = OptionsWithUri & { useStream?: boolean };
-		let requestOptions: RequestOptions = {
-			uri: '',
-		};
+		type RequestOptions = RequestPromiseOptions & { useStream?: boolean };
+		let requestOptions: RequestOptions = {};
 
 		let returnItems: INodeExecutionData[] = [];
 		const requestPromises = [];
@@ -743,7 +732,6 @@ export class L402Request implements INodeType {
 			requestOptions = {
 				headers: {},
 				method: requestMethod,
-				uri: url,
 				gzip: true,
 				rejectUnauthorized: !allowUnauthorizedCerts || false,
 				followRedirect: false,
@@ -974,16 +962,17 @@ export class L402Request implements INodeType {
 				}
 			}
 			try {
-				this.sendMessageToUI(sanitizeUiMessage(requestOptions, authDataKeys));
-			} catch (e) {}
-			if (authentication === 'none') {
-        // bearerAuth, queryAuth, headerAuth, digestAuth, none
-        const request = fetchWithL402('https://lsat-weather-api.getalby.repl.co/kigali', requestOptions, { webln: nwc });
-        request.catch(() => {});
-        requestPromises.push(request);
-			}
+				this.sendMessageToUI(sanitizeUiMessage({...requestOptions, uri: url}, authDataKeys));
+			} catch (e) {
+        console.log("sendMessageToUI err")
+      }
+      // bearerAuth, queryAuth, headerAuth, digestAuth, none
+      const request = fetchWithL402('https://lsat-weather-api.getalby.repl.co/kigali', requestOptions, { webln: nwc });
+      request.catch(() => {});
+      requestPromises.push(request);
 		}
 		const promisesResponses = await Promise.allSettled(requestPromises);
+    console.log(promisesResponses, "promisesResponses")
 
 		let response: any;
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
@@ -1010,23 +999,31 @@ export class L402Request implements INodeType {
 			}
 
 			response = response.value;
+      console.log(response)
+			const val = await response.json();
+      console.log(val, "val")
 
 			const url = this.getNodeParameter('url', itemIndex) as string;
+      console.log(url)
 
 			let responseFormat = this.getNodeParameter(
 				'options.response.response.responseFormat',
 				0,
 				'autodetect',
 			) as string;
+      console.log(responseFormat)
 
 			fullResponse = this.getNodeParameter(
 				'options.response.response.fullResponse',
 				0,
 				false,
 			) as boolean;
+      console.log(fullResponse)
 
+      console.log(autoDetectResponseFormat)
 			if (autoDetectResponseFormat) {
-				const responseContentType = response.headers['content-type'] ?? '';
+				const responseContentType = response.headers.get('content-type') ?? '';
+        console.log(responseContentType)
 				if (responseContentType.includes('application/json')) {
 					responseFormat = 'json';
 					const neverError = this.getNodeParameter(

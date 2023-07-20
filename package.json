@@ -1,6 +1,6 @@
 {
   "name": "@getalby/n8n-nodes-l402-request",
-  "version": "0.1.7",
+  "version": "0.1.18",
   "description": "",
   "keywords": [
     "n8n-community-node-package"
@@ -36,7 +36,9 @@
   },
   "dependencies": {
     "alby-js-sdk": "^2.1.0",
-    "alby-tools": "^3.2.0"
+    "alby-tools": "^3.2.0",
+    "crypto": "^1.0.1",
+    "websocket-polyfill": "^0.0.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.6",
