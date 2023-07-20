@@ -634,7 +634,6 @@ export class L402Request implements INodeType {
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
-    console.log(items)
 		const nodeVersion = this.getNode().typeVersion;
 
 		const fullResponseProperties = ['body', 'headers', 'statusCode', 'statusMessage'];
@@ -967,12 +966,11 @@ export class L402Request implements INodeType {
         console.log("sendMessageToUI err")
       }
       // bearerAuth, queryAuth, headerAuth, digestAuth, none
-      const request = fetchWithL402('https://lsat-weather-api.getalby.repl.co/kigali', requestOptions, { webln: nwc });
+      const request = fetchWithL402(url, requestOptions, { webln: nwc });
       request.catch(() => {});
       requestPromises.push(request);
 		}
-		const promisesResponses = await Promise.allSettled(requestPromises);
-    console.log(promisesResponses, "promisesResponses")
+    const promisesResponses = await Promise.allSettled(requestPromises);
 
 		let response: any;
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
@@ -999,47 +997,29 @@ export class L402Request implements INodeType {
 			}
 
 			response = response.value;
-      console.log(response)
-			const val = await response.json();
-      console.log(val, "val")
 
 			const url = this.getNodeParameter('url', itemIndex) as string;
-      console.log(url)
 
 			let responseFormat = this.getNodeParameter(
 				'options.response.response.responseFormat',
 				0,
 				'autodetect',
 			) as string;
-      console.log(responseFormat)
 
 			fullResponse = this.getNodeParameter(
 				'options.response.response.fullResponse',
 				0,
 				false,
 			) as boolean;
-      console.log(fullResponse)
 
-      console.log(autoDetectResponseFormat)
 			if (autoDetectResponseFormat) {
 				const responseContentType = response.headers.get('content-type') ?? '';
-        console.log(responseContentType)
 				if (responseContentType.includes('application/json')) {
 					responseFormat = 'json';
-					const neverError = this.getNodeParameter(
-						'options.response.response.neverError',
-						0,
-						false,
-					) as boolean;
-
-					const data = await this.helpers
-						.binaryToBuffer(response.body as Buffer | Readable)
-						.then((body) => body.toString());
-					response.body = jsonParse(data, {
-						...(neverError
-							? { fallbackValue: {} }
-							: { errorMessage: 'Invalid JSON in response body' }),
-					});
+					response = {
+            ...response,
+            body: await response.json()
+          };
 				} else if (binaryContentTypes.some((e) => responseContentType.includes(e))) {
 					responseFormat = 'file';
 				} else {
@@ -1060,6 +1040,7 @@ export class L402Request implements INodeType {
 			}
 
 			if (responseFormat === 'file') {
+        // L402 File Format Not Tested
 				const outputPropertyName = this.getNodeParameter(
 					'options.response.response.outputPropertyName',
 					0,
@@ -1109,6 +1090,7 @@ export class L402Request implements INodeType {
 
 				returnItems.push(newItem);
 			} else if (responseFormat === 'text') {
+        // L402 Text Format Not Tested
 				const outputPropertyName = this.getNodeParameter(
 					'options.response.response.outputPropertyName',
 					0,
@@ -1142,6 +1124,7 @@ export class L402Request implements INodeType {
 				}
 			} else {
 				// responseFormat: 'json'
+        // Tested for L402
 				if (requestOptions.resolveWithFullResponse === true) {
 					const returnItem: IDataObject = {};
 					for (const property of fullResponseProperties) {
