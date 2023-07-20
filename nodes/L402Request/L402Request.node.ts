@@ -966,8 +966,11 @@ export class L402Request implements INodeType {
         console.log("sendMessageToUI err")
       }
       // bearerAuth, queryAuth, headerAuth, digestAuth, none
-      const request = fetchWithL402(url, requestOptions, { webln: nwc });
-      request.catch(() => {});
+      const request = fetchWithL402(url, requestOptions, { webln: nwc, headerKey: "LSAT" })
+        .catch(error => {
+          console.error("Error in fetchWithL402:", error);
+          throw new Error("Custom error message");
+        });
       requestPromises.push(request);
 		}
     const promisesResponses = await Promise.allSettled(requestPromises);
