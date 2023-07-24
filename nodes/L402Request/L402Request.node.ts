@@ -815,6 +815,7 @@ export class L402Request implements INodeType {
             nodeVersion,
             parametersToKeyValue,
           );
+          requestOptions.body = JSON.stringify(requestOptions.body);
         } else if (specifyBody === 'json') {
           // body is specified using JSON
           if (typeof jsonBodyParameter !== 'object' && jsonBodyParameter !== null) {
@@ -830,9 +831,13 @@ export class L402Request implements INodeType {
               );
             }
 
-            requestOptions.body = jsonParse(jsonBodyParameter);
-          } else {
             requestOptions.body = jsonBodyParameter;
+          } else {
+            if (typeof jsonBodyParameter === 'object') {
+              requestOptions.body = JSON.stringify(jsonBodyParameter);
+            } else {
+              requestOptions.body = jsonBodyParameter;
+            }
           }
         } else if (specifyBody === 'string') {
           //form urlencoded
