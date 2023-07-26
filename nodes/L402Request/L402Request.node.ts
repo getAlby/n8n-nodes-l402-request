@@ -1,5 +1,5 @@
 import type { Readable } from 'stream';
-import { fetchWithL402 } from 'alby-tools';
+import { l402 } from 'alby-tools';
 import { webln } from 'alby-js-sdk';
 import 'websocket-polyfill';
 
@@ -971,7 +971,8 @@ export class L402Request implements INodeType {
         console.log("sendMessageToUI err")
       }
       // bearerAuth, queryAuth, headerAuth, digestAuth, none
-      const request = fetchWithL402(url, requestOptions, { webln: nwc })
+      console.log(`Calling fetchWithL402 for ${url}`);
+      const request = l402.fetchWithL402(url, requestOptions, { webln: nwc, store: new l402.storage.NoStorage() })
         .catch(error => {
           console.error("Error in fetchWithL402:", error);
           throw new Error("Custom error message");

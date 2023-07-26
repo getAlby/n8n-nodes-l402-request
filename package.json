@@ -35,8 +35,8 @@
     ]
   },
   "dependencies": {
-    "alby-js-sdk": "^2.1.0",
-    "alby-tools": "^3.2.0",
+    "alby-js-sdk": "^2.1.1",
+    "alby-tools": "^3.2.1",
     "crypto": "^1.0.1",
     "websocket-polyfill": "^0.0.3"
   },
