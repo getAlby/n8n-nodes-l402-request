@@ -1,47 +1,70 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+![Banner image](docs/cover.png)
 
-# n8n-nodes-starter
+# n8n-nodes-l402-request
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](n8n.io). It includes the node linter and other dependencies.
+This is an [n8n](n8n.io) community node for [L402](https://docs.lightning.engineering/the-lightning-network/l402) endpoints. Lets you make L402 requests using [Nostr Wallet Connect](https://nwc.getalby.com/).
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+L402, formerly known as LSAT, is a standard to support the use case of charging for services and authenticating users in distributed networks. It combines the strengths of Macaroons for better authentication with the strengths of the Lightning Network for better payments.
 
-## Prerequisites
+[n8n](n8n.io) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
-You need the following installed on your development machine:
+## How to install
 
-* [git](https://git-scm.com/downloads)
-* Node.js and npm. Minimum version Node 16. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-	```
-	npm install n8n -g
-	```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+### Community Nodes (Recommended)
+- Go to **Settings > Community Nodes**.
+- Select **Install**.
+- Enter `n8n-nodes-l402-request` in **Enter npm Package Name**.
+- Agree to the [risks](https://docs.n8n.io/integrations/community-nodes/risks/) of using community nodes: select **I understand the risks of installing unverified code from a public source**.
+- Select **Install**.
 
+After installing the node, you can use it like any other node. n8n displays the node in search results in the Nodes panel.
 
-## Using this starter
+### Manual installation
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+To get started install the package in your n8n root directory:
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-    ```
-    git clone https://github.com/<your organization>/<your-repo-name>.git
-    ```
-3. Run `npm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `npm run lint` to check for errors or `npm run lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+`npm install n8n-nodes-l402-request`
 
-## More information
+For Docker-based deployments, add the following line before the font installation command in your n8n Dockerfile:
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+`RUN cd /usr/local/lib/node_modules/n8n && npm install n8n-nodes-l402-request`
+
+## NWC Setup
+
+In order to make payments for the L402 Requests, you have to add L402 credentials which would be your [Nostr Wallet Connect](https://nwc.getalby.com/) connection string.
+
+First login to NWC using your [Alby](https://getalby.com) Account.
+
+![NWC Login Image](docs/ss-0.png)
+
+After that, you can either click on **New Connection** to name your app or create an application using [this link](https://nwc.getalby.com/apps/new?c=l402-request) directly.
+
+(You can also set your budget, budget renewal and expiry date for the NWC connection)
+
+![NWC Creation Image](docs/ss-1.png)
+
+Once done, click on **Reveal Pairing Secret** and copy the Secret.
+
+![NWC Secret Image](docs/ss-2.png)
+
+### Adding NWC Credentials
+
+- After copying the secret, open n8n and go to **Credentials > Add Credential**.
+- Search for **L402 API**.
+- Select **Continue**.
+- Paste your NWC Secret in the **Nostr Wallet Connect URL** Input Field.
+- Don't forget to click on **Save**!
+
+![L402 Credentials Image](docs/ss-3.png)
+
+## L402 Request Node Reference
+
+- **Credential for L402 Node:** If you followed the NWC setup guide above, you will be able to select your L402 credentials to make requests.
+- **Method:** You can use any HTTP method to make the request as long as the endpoint supports L402.
+- **URL:** Enter the URL of the endpoint and click **Execute Node**. That should be it to start making L402 Requests within your workflow!
 
 ## License
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+MIT License
+
+Copyright (c) 2023 Alby Contributors <hello@getalby.com>
