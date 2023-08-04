@@ -13,7 +13,7 @@ L402, formerly known as LSAT, is a standard to support the use case of charging 
 ### Community Nodes (Recommended)
 - Go to **Settings > Community Nodes**.
 - Select **Install**.
-- Enter `n8n-nodes-l402-request` in **Enter npm Package Name**.
+- Enter `@getalby/n8n-nodes-l402-request` in **Enter npm Package Name**.
 - Agree to the [risks](https://docs.n8n.io/integrations/community-nodes/risks/) of using community nodes: select **I understand the risks of installing unverified code from a public source**.
 - Select **Install**.
 
